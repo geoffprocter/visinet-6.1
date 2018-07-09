@@ -1,0 +1,192 @@
+/*generic*/
+a{text-decoration:none;color:#333}
+b{font-weight:600;}
+hr{margin:15px 0px}
+body{font-weight:normal !important;font-family:Arial;font-size:16px;}
+[data-role='page']{background:#f5f5f5;}
+[data-role='header']{height:35px;}
+[data-role='header'] h1{font-weight:normal !important;}
+[data-role='footer'] a{font-weight:normal !important;}
+.ui-btn-text{font-weight:normal !important;}
+.waiting_div_text{font-weight:normal !important}
+.page{padding-bottom:39px;}
+.link{color:#1122CC;}
+
+/*keyframes*/
+@-webkit-keyframes spinnerRotate{from{-webkit-transform:rotate(0deg);}to{-webkit-transform:rotate(360deg);}}
+@-webkit-keyframes vehicle_flash{from{color:white;}to{color:black;}}
+
+/*waiting div*/
+.waiting_div_mask{width:100%;height:100%;background:#000;position:fixed;z-index:999;top:0;opacity:0.5;display:none}
+.waiting_div_spin{height:50px;position:fixed;width:100%;z-index:1000;margin-top:200px;text-align:center;-webkit-animation-name:spinnerRotate;-webkit-animation-duration:0.8s;-webkit-animation-iteration-count:infinite;-webkit-animation-timing-function:linear;display:none;}
+.waiting_div_spin img{width:50px;height:50px;}
+.waiting_div_text{position:fixed;width:100%;z-index:1000;margin-top:260px;color:#fff;font-weight:bold;font-size:16px;text-align:center;opacity:1}
+
+/*footer*/
+.footer{bottom:0;position:fixed;background:#f5f5f5;border-top:1px #000 solid;box-shadow:#333 0px 0px 5px 0px;width:100%;}
+.footer table{width:100%;height:38px}
+.footer td{width:25%;text-align:center;padding:0px;}
+#settings_button{background:url(images/settings-32.png);background-repeat:no-repeat;background-position:center;background-size:20px 20px}
+#reload_button{}
+#reload_button_stopped{margin-top:5px;width:26px;height:26px;display:none}
+#reload_button_spinning{margin-top:5px;width:26px;height:26px;-webkit-animation-name:spinnerRotate;-webkit-animation-duration:0.8s;-webkit-animation-iteration-count:infinite;-webkit-animation-timing-function:linear;}
+
+/*.pause{-webkit-animation-play-state:paused;-moz-animation-play-state:paused;-o-animation-play-state:paused;animation-play-state:paused;}removed3.3*/
+.footer td.active{color:#56a3fd;}
+
+/*main page*/
+#top_bar{position:fixed;width:100%;box-shadow:#333 0px 0px 5px 0px;top:0;left:0;border-bottom:1px #333 solid;background:#f6f6f6;display:none;z-index: 99}
+	#top_bar table{width:100%;text-align:center}
+		#top_bar table tr td{height:25px;padding-top:1px}
+		#top_bar table tr td:first-child{width:12%;}
+		#top_bar table tr td:first-child+td{width:18%;}
+		#top_bar table tr td:first-child+td+td{width:18%;}
+		#top_bar table tr td:first-child+td+td+td{width:19%;}
+		#top_bar table tr td:first-child+td+td+td+td{width:21%;}
+		#top_bar table tr td:first-child+td+td+td+td+td{width:12%;}
+
+#progress_bar{background:#56a3fd;height:3px;width:0%;position:fixed;bottom:0}
+
+#pending_table{}
+	.pending_row td{padding:2px 2px 0px 0px;border-bottom:1px solid black}
+	.pending_row td:nth-of-type(2){width:100%;}/*forces middle column to take up as much space as possible*/
+
+#vehicle_div{padding-top:0px;}
+	#vehicle_table{margin:0;padding:0;width:100%;font-size:14px;margin-top:0px}
+		
+		.vehicle_row td:nth-child(1){vertical-align:top;position:relative}
+			.kpi_bar_outer{height:100%;position:absolute}
+			.kpi_chute_div{height:50%;vertical-align:top;}
+			.kpi_destination_div{height:50%;}
+			.kpi_bar{height:100%;width:3px;display:inline-block;margin-right:1px;}
+			.off_station{height:50%;vertical-align:top;}
+
+		.vehicle_row td{border-top:1px #000 solid}
+		.vehicle_row td:nth-child(3){padding:0px 3px;width:95%;}
+		.vehicle_row td:nth-child(4){padding:0px 3px 0px 1px;text-align:right;}
+		.vehicle_row:nth-of-type(1) td:nth-of-type(1){padding-top:0px;}/*remove top row pad for kpi column*/
+		
+		.vehicle_row:nth-last-child(1) td:nth-child(1){border-bottom:0px}
+		.vehicle_row:nth-last-child(1) td:nth-child(2){border-bottom:0px}
+		.vehicle_row:nth-last-child(1) td:nth-child(3){border-bottom:0px;}
+
+		#vehicle_table tr:last-of-type>td{border-bottom:1px solid #000;}
+
+		.vehicle_number{vertical-align:middle;text-align:center;}
+			.vehicle_number div{position:relative;}
+			.vehicle_number div:nth-of-type(1){font-size:18px;}
+			.vehicle_number div:nth-of-type(2){font-size:12px;}
+			.flagged_blue{background:-webkit-gradient(linear,left top, right top, color-stop(0%,rgba(125,185,232,0)), color-stop(100%,rgba(86,163,253,1)));}
+			.vehicle_status{font-size:1.1em;}
+			.vehicle_flash{color:black;-webkit-animation:vehicle_flash 0.7s infinite alternate;}
+			
+		/*vehicle history*/
+		.late{color:red;}
+		.vehicle_history_row td{height:2px;max-height:2px;overflow: none;}
+			.job,.ava,.rtn,.stn,.oos,.end,.purple,.red,.orange,.green,.grey{float:left;height:2px;}
+			.job{background:black}
+			.ava,.rtn{background:black;height:1px;margin-top:1px}
+			.stn{background:white}
+			.oos{background:yellow}
+			.end{height:2px;background:blue;width:2px}
+			.purple{background:magenta}
+			.red{background:red}
+			.orange{background:orange}
+			.green{background:green}
+			.grey{background:#888888}
+
+/*job details page*/
+#job_details_page_inner{padding-bottom:50px;}
+	.job_details_title{font-size:1.1em;margin:5px;}
+	#job_details_page_inner td{border-bottom:0px;vertical-align:top;padding:0px 3px;font-size:0.9em;}
+		#vehicle_details_table tr{text-align:center;}
+		
+/*unit details page*/
+#unit_details_page_inner{padding-bottom:50px;}
+	.unit_details_title{font-size:1.1em;margin:5px;}
+	#unit_details_page_inner td{border-bottom:0px;vertical-align:top;padding:0px 3px;font-size:0.9em;}
+	.unit_details_table{white-space:nowrap;}
+		.unit_details_table tr td:nth-of-type(5){text-align:center;}
+		.unit_details_table tr td:nth-of-type(6){text-align:center;}
+		.unit_details_table tr td:nth-of-type(7){text-align:center;}
+		.unit_details_table tr td:nth-of-type(8){text-align:center;}
+		.unit_details_table tr td:nth-of-type(9){text-align:center;}
+
+/*settings page*/
+#settings_table tr{border-bottom:0px;}
+#settings_table td{border-bottom:0px;}
+
+/*abbreviation page*/
+#vehicle_abbreviations_table td{border-bottom:0px;}
+#vehicle_abbreviations_table td:nth-child(2){padding:0px 5px}
+
+#location_abbreviations_table td{border-bottom:0px;}
+#location_abbreviations_table td:nth-child(2){padding:0px 5px}
+
+/*kpi page*/
+.period_div{border:1px solid #aaa;margin:2px 0px 0px 2px;display:inline-block;}
+	.period_div th{font-weight:normal;}
+	.kpi_title{font-size:15px;text-align:center;background:#ccc;border-bottom:1px solid #aaa}
+	.shift_kpi_table,.shift_kpi_table_block{white-space:nowrap;font-size:14px;}
+		.shift_kpi_table th{position:relative;z-index:1;background:#F6F6F6}
+		.shift_kpi_table th:first-child{width:90px;/*position:absolute;z-index:0;*/}
+
+		.shift_kpi_table td,.shift_kpi_table_block td{position:relative;z-index:1}
+		.shift_kpi_table td:first-child{white-space:nowrap;/*position:absolute;z-index:0*/}
+		.shift_kpi_table td:first-child+td{background:#ff9999;width:50px;min-width:50px;text-align:center;}
+		.shift_kpi_table td:first-child+td+td{background:#ffd280;width:50px;min-width:50px;text-align:center;}
+		.shift_kpi_table td:first-child+td+td+td{background:#a6b5ff;width:50px;min-width:50px;text-align:center;}
+		.shift_kpi_table td:first-child+td+td+td+td{background:#99ff99;width:50px;min-width:50px;text-align:center;}
+		.red_block td:first-child+td,.red_block td:first-child+td+td,.red_block td:first-child+td+td+td,.red_block td:first-child+td+td+td+td{background:#ff9999;}
+		.brown_block td:first-child+td,.brown_block td:first-child+td+td,.brown_block td:first-child+td+td+td,.brown_block td:first-child+td+td+td+td{background:#ffd280;}
+		.blue_block td:first-child+td,.blue_block td:first-child+td+td,.blue_block td:first-child+td+td+td,.blue_block td:first-child+td+td+td+td{background:#a6b5ff;}
+		.green_block td:first-child+td,.green_block td:first-child+td+td,.green_block td:first-child+td+td+td,.green_block td:first-child+td+td+td+td{background:#99ff99;}
+	.show_hide_button_left{font-size:13px;text-align:left;padding:3px;}
+	.show_hide_button_right{font-size:13px;text-align:right;padding:3px;margin-top:-24px;width:308px;}
+
+	.shift_kpi_table_all{white-space:nowrap;width:100%;font-size:14px;}
+		.shift_kpi_table_all th{position:relative;z-index:1;background:#F6F6F6}
+		.shift_kpi_table_all th:first-child{width:155px;position:absolute;z-index:0}
+		
+		.shift_kpi_table_all td{position:relative;z-index:1}
+		.shift_kpi_table_all td:first-child{white-space:nowrap;width:155px;position:absolute;z-index:0}
+		.shift_kpi_table_all td:first-child+td{background:#ff9999;width:47px;text-align:center;}
+		.shift_kpi_table_all td:first-child+td+td{background:#ffd280;width:47px;text-align:center;}
+		.shift_kpi_table_all td:first-child+td+td+td{background:#a6b5ff;width:47px;text-align:center;}
+		.shift_kpi_table_all td:first-child+td+td+td+td{background:#99ff99;width:47px;text-align:center;}
+		.shift_kpi_table_all td:first-child+td+td+td+td+td{width:47px;text-align:center;}.filled{background:#cccccc;}
+
+	.staff_kpi_table{width:100%;display:none;margin-top:5px;font-size:14px}
+		.staff_kpi_table th{position:relative;z-index:1;background:#F6F6F6}
+		.staff_kpi_table th:first-child{width:90px;position:absolute;z-index:0;}
+		
+		.staff_kpi_table td{position:relative;z-index:1}
+		.staff_kpi_table td:first-child{white-space:nowrap;width:90px;position:absolute;z-index:0}
+		.staff_kpi_table td:first-child+td{text-align:center;width:40px;background:#ff999a;background-image:url('images/purple_red_blend.jpg');background-repeat:repeat-y;background-size:100%;}
+		.staff_kpi_table td:first-child+td+td{text-align:center;width:40px;background:#ffd280;}
+		.staff_kpi_table td:first-child+td+td+td{text-align:center;width:40px;background:#99ff99;background-image:url('images/green_grey_blend.jpg');background-repeat:repeat-y;background-size:100%;}
+		.staff_kpi_table td:first-child+td+td+td+td{text-align:center;width:40px;background:#cccccc;}
+	
+	.staff_job td:first-child{font-size:14px;color:#1122CC;width:132px;text-align:right;background-image:url('images/dashed_corner.png');background-repeat:no-repeat;background-position:top left}
+	.staff_job_last td:first-child{font-size:14px;color:#1122CC;width:132px;text-align:right;background-image:url('images/dashed_corner_last.png');background-repeat:no-repeat;background-position:top left}
+
+	.avl_table{font-size:0.8em;}
+		.avl_table th{font-weight:bold}
+		.avl_table td:first-child{white-space:nowrap;}
+		.avl_table td:first-child+td{text-align:center;white-space:nowrap;padding-left:10px;}
+		.avl_table td:first-child+td+td{text-align:center;white-space:nowrap;padding-left:10px}
+		.avl_table td:first-child+td+td+td{text-align:center;white-space:nowrap;padding-left:10px}
+
+	.job_kpi_table{display:none;}
+		.job_kpi_table th,.job_kpi_table td{white-space: nowrap; font-size: 0.8em}
+		.job_kpi_table tr td:nth-of-type(1){text-align:center;}
+		.job_kpi_table tr td:nth-of-type(2){text-align:center;}
+
+		.job_kpi_table tr td:nth-of-type(5){text-align:center;}
+		.job_kpi_table tr td:nth-of-type(6){text-align:center;}
+		.job_kpi_table tr td:nth-of-type(8){background-color:#f5f5f5;}
+		.job_kpi_table tr td:nth-of-type(10){text-align:center;}
+		.job_kpi_table tr td:nth-of-type(11){text-align:center;}
+		.job_kpi_table tr td:nth-of-type(12){text-align:center;}
+		.job_kpi_table tr td:nth-of-type(13){text-align:center;}
+		.job_kpi_table tr td:nth-of-type(14){text-align:center;}

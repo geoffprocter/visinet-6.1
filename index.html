@@ -1,0 +1,505 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <link rel="stylesheet" href="css/visinet_theme-old.min.css"/>
+	<link rel="stylesheet" href="css/jquery.mobile.structure-1.2.0.min.css"/>
+	<link rel="stylesheet" href="css/visinet.css" media="screen"/>
+	<script src="phonegap.js"></script>
+	<script src="PowerManagement.js"></script>
+	<script src="js/jquery-1.8.3.min.js"></script>
+	<script src="js/jquery.mobile-1.2.0.min.js"></script>
+	<script src="js/fastclick.js"></script>
+	<script src="js/visinet.js"></script>
+	<script src="js/stupidtable.min.js"></script>
+</head> 
+<body>
+	<!--MAIN SCREEN-->
+	<div data-role="page" id="vehicles_page" class="page" data-theme="a">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_text"></div>
+		<div data-role="content" data-theme="a" style="padding:0px">
+			<div id="top_bar" onclick="open_kpi_page()"><table><tr><td></td><td></td><td></td><td></td><td></td></tr></table></div>
+			<div id="vehicle_div">
+				<table id="pending_table" cellspacing="0" cellpadding="0" style="width:100%;"></table>
+				<table id="vehicle_table" cellspacing="0" cellpadding="0"></table>
+			</div>
+        </div>
+        <div class="footer">
+            <table cellspacing="0" cellpadding="0"><tr>
+                <td id="eas_button" class="active" onclick="change_display_vehicles('eas')">EAS</td>
+                <td id="all_button" onclick="change_display_vehicles('all')">All</td>
+                <td id="settings_button" onclick="open_settings()"></td>
+                <td id="reload_button" onclick="reload_queues()">
+                    <img id="reload_button_spinning" src="css/images/reload-32.png">
+                    <img id="reload_button_stopped" src="css/images/reload-32.png">
+                </td>
+            </tr></table>
+        </div>
+		<div id="progress_bar"></div>
+	</div>
+	<!--KPI PAGE-->
+	<div data-role="page" id="kpi_page" class="page" data-theme="a">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">KPIs</h1>
+		</div>
+        <div data-role="content" data-theme="a" style="padding:0px;overflow-x:scroll">
+			<div id="kpis_data"></div>
+			<div id="kpis_raw" style="display:none;"></div>
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#vehicles_page" data-transition="slideup" onclick="$('.waiting_div').hide()">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+	</div>
+	<!--AVL PAGE-->
+	<div data-role="page" id="avl_page" class="page" data-theme="a">
+		<div class="waiting_div waiting_div_mask"></div>
+		<div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+		<div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">AVL Details</h1>
+		</div>
+		<div data-role="content" data-theme="a" style="padding:0px;overflow-x:scroll">
+			<div id="avl_data"></div>
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<div data-role="navbar">
+				<ul>
+	                <li><a id="avl_details_close_button">Return</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!--UNIT DETAILS PAGE-->
+    <div data-role="page" id="unit_details_page">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1>Unit Details</h1>
+		</div>
+        <div data-role="content" data-theme="a" style="padding:0px;overflow-x:scroll">
+        	<div id="unit_details_page_inner"></div>
+        </div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#vehicles_page" id="unit_details_close_button" data-transition="none" onclick="close_details_page()">Return</a></li>
+            	</ul>
+    	    </div>
+		</div>
+    </div>
+	<!--JOB DETAILS PAGE-->
+    <div data-role="page" id="job_details_page">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1>Job Details</h1>
+		</div>
+        <div data-role="content" data-theme="a" style="padding:0px;overflow-x:scroll">
+        	<div id="job_details_page_inner"></div>
+        </div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+	                <li><a id="job_details_close_button">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+    </div>
+	
+	<!--LOGIN PAGE-->
+    <div data-role="page" id="login_page" class="page" data-theme="a">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+	    <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1>Login</h1>
+		</div>
+        <div data-role="content" data-theme="a">
+        	<div>Your VPN and Visinet usernames and passwords are supplied by your employer. Your App username and password are supplied by us, which you can <a style="text-decoration:underline" onclick="$.mobile.changePage($('#request_login_page'),{transition:'none'});">request here</a> or if forgotten <a style="text-decoration:underline" onclick="$.mobile.changePage($('#recover_password_page'),{transition:'none'});">recover here</a>.</div>
+			<input type="text" placeholder="App Username" id="app_username" value=""/>
+			<input type="password" placeholder="App Password" id="app_password" value=""/>
+			<input type="text" placeholder="VPN Username" id="vpn_username" value=""/>
+			<input type="password" placeholder="VPN Password" id="vpn_password" value=""/>
+			<input type="text" placeholder="Visinet Username" id="visinet_username" value=""/>
+			<input type="password" placeholder="Visinet Password" id="visinet_password" value=""/>
+			<input type="button" value="Login" onclick="login()"/>
+        </div>
+	</div>
+    <!--RECOVER PASSWORD PAGE-->
+    <div data-role="page" id="recover_password_page" class="page" data-theme="a">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+	    <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1>Recover Password</h1>
+		</div>
+        <div data-role="content" data-theme="a">
+        	<div>Your VPN and Visinet passwords are supplied by your employer, and can only be recovered through them. Your App password can be recovered by entering your registered email below.</div>
+			<input type="text" placeholder="Email" id="recover_password_email" value=""/>
+			<input type="button" value="Recover Password" onclick="recover_password()"/>
+        </div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#login_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>           
+	</div>
+    <!--REQUEST VISINET APP LOGIN PAGE-->
+    <div data-role="page" id="request_login_page" class="page" data-theme="a">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+	    <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1>Request Login</h1>
+		</div>
+        <div data-role="content" data-theme="a">
+        	<div>Your VPN and Visinet usernames and passwords are supplied by your employer. Your App username and password are supplied by the app builder, which you can apply for here.</div>
+			<input type="text" placeholder="First Name" id="first_name" value=""/>
+			<input type="text" placeholder="Last Name" id="last_name" value=""/>
+			<input type="text" placeholder="Organisation" id="company" value=""/>
+			<input type="text" placeholder="Position" id="position" value=""/>
+			<input type="text" placeholder="Email" id="email" value=""/>
+			<input type="button" value="Request Login" onclick="request_login()"/>
+        </div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#login_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>           
+	</div>
+
+	<!--SETTINGS PAGE-->
+	<div data-role="page" id="settings_page" class="page" data-theme="a">
+	    <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1>Settings</h1>
+		</div>        
+        <div data-role="content" data-theme="a">
+	        <input type="button" value="Set Vehicle Abbreviations" data-icon="arrow-r" data-iconpos="right" onclick="$.mobile.changePage($('#vehicle_abbreviations_page'),{transition:'none'});"/>
+	        <input type="button" value="Set Location Abbreviations" data-icon="arrow-r" data-iconpos="right" onclick="$.mobile.changePage($('#location_abbreviations_page'),{transition:'none'});"/>
+	        <input type="button" value="Set EAS Inclusions" data-icon="arrow-r" data-iconpos="right" onclick="$.mobile.changePage($('#eas_inclusions_page'),{transition:'none'});"/>
+	        <input type="button" value="Set OOS Exclusions" data-icon="arrow-r" data-iconpos="right" onclick="$.mobile.changePage($('#oos_exclusions_page'),{transition:'none'});"/>
+	        <input type="button" value="Set Permanent Exclusions" data-icon="arrow-r" data-iconpos="right" onclick="$.mobile.changePage($('#permanent_exclusions_page'),{transition:'none'});"/>
+			<hr/>
+			<select name="region" id="region">
+			   <option value="30">North North</option>
+			   <option value="31">North Central</option>
+			   <option value="32">Central Taranaki</option>
+			   <option value="33">Central South</option>
+			   <option value="35" selected="selected">Central WFA</option>
+			   <option value="36">South Island North</option>
+			   <option value="37">South Island South</option>         
+			</select>
+			<hr/>
+	        <input type="button" value="Change App Password" data-icon="arrow-r" data-iconpos="right" onclick="$.mobile.changePage($('#change_app_password_page'),{transition:'none'});"/>
+<!--	    <input type="button" value="Change VPN Password" data-icon="arrow-r" data-iconpos="right" onclick="$.mobile.changePage($('#change_vpn_password_page'),{transition:'none'});"/>-->
+			<input type="button" value="Logout" data-icon="delete" data-iconpos="right" onclick="confirm_logout()"/>
+			<hr/>
+			<div id="version_notes">
+				<h2>Instructions</h2>
+				<b><u>Main Page</u></b><br/>
+				<br>
+				After logging in or reopening you are shown the main screen. Pending incidents are shown at the top, all vehicles are shown at the bottom. A max of 50 can be shown at any one time. The 'EAS' vehicles screen shows all single digit or prefixed '9' vehicle (eg Thorndon 1 or Thorndon 91). App loads live data once every minute, timer shown by blue bar at bottom of main screen:<br/>
+				<img src="css/images/instructions/blue_bar.png" style="width:100%;max-width:400px"/><br/>
+				<br/>
+				Tap the vehicle name to open the vehicle details screen:<br/>
+				<img src="css/images/instructions/vehicle_details.png" style="width:100%;max-width:400px"/><br/>
+				<br/>
+				The details area shows the job code & job location, the current location of the vehicle (L) and the current destination of the vehicle (D). Tap the vehicle to open the vehicle details screen:<br/>
+				<img src="css/images/instructions/job_details.png" style="width:100%;max-width:400px"/><br/>
+				<br/>
+				The status area shows the status and elapsed time. On scene times (SCN) flash if they are over 5 minutes and haven't been changed to contact (CON). Destination time (DES) flash if over 20 minutes.<br/>
+				<img src="css/images/instructions/status_button.png" style="width:100%;max-width:400px"/><br/>
+				<br/>
+				Tap the status area to toggle a blue flag for your personal reference if wanted.<br/>
+				<img src="css/images/instructions/status_button_blue.png" style="width:100%;max-width:400px"/><br/>
+				<br/>
+				<div id="history_instructions" style="display:none">
+					At the top of the page are the current shift's KPIs. This can be tapped to open the KPIs page. From left to right they are:<br/>
+					<ul style="list-style-type:square;list-style-position:inside;padding-left:15px;margin-top:0px">
+						<li>Total EAS job count (Urban, all colours)</li>
+						<li>Median assign time (Urban Purples & Reds)</li>
+						<li>Median chute time (Urban Purples & Reds)</li>
+						<li>8m response target (Urban Purples & Reds)</li>
+						<li>Median hospital time (Urban, all colours)</li>
+					</ul>
+					<img src="css/images/instructions/kpi_bar.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					Chute & Assign colour coding:
+					<ul style="list-style-type:square;list-style-position:inside;padding-left:15px;margin-top:0px">
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#99ff99;"></span> = met KPI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Under 45s)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ffd280;"></span> = over KPI &nbsp;&nbsp;&nbsp;&nbsp;(46s-90s)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ff9999;"></span> = double KPI (91s-135s)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ff99ff;"></span> = triple KPI &nbsp;&nbsp;&nbsp;(Over 135s)</li>
+					</ul>
+					Response colour coding:
+					<ul style="list-style-type:square;list-style-position:inside;padding-left:15px;margin-top:0px">
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#99ff99;"></span> = met KPI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Over 50%)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ffd280;"></span> = over KPI &nbsp;&nbsp;&nbsp;&nbsp;(40%-50%)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ff9999;"></span> = over KPI &nbsp;&nbsp;&nbsp;&nbsp;(30%-40%)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ff99ff;"></span> = over KPI &nbsp;&nbsp;&nbsp;&nbsp;(Under 30%)</li>
+					</ul>
+					Destination colour coding:
+					<ul style="list-style-type:square;list-style-position:inside;padding-left:15px;margin-top:0px">
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#99ff99;"></span> = met KPI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Under 20m)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ffd280;"></span> = over KPI &nbsp;&nbsp;&nbsp;&nbsp;(20m-30m)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ff9999;"></span> = over KPI &nbsp;&nbsp;&nbsp;&nbsp;(30m-40m)</li>
+						<li><span style="height:12px;width:3px;display:inline-block;background-color:#ff99ff;"></span> = over KPI &nbsp;&nbsp;&nbsp;&nbsp;(Over 40m)</li>
+					</ul>
+					<br/>
+					<b><u>Vehicle History</u></b><br/>
+					<br/>
+					Vehicle history is loaded once every 15 minutes. This is shown under the vehicle name and as an extra bar under the vehicle row. The percentage is the amount of downtime (at station or out of service) the vehicle has had this shift, including breaks. Next to percentage is the breaks indicators:<br/>
+					<ul style="list-style-type:square;list-style-position:inside;padding-left:15px">
+						<li>C = Completed 30m break</li>
+						<li><span style="color:red">C</span> = Completed 30m break late</li>
+						<li>B = Broken break</li>
+						<li><span style="color:red">B</span> = Broken break, started late</li>
+						<li><span style="font-size:12px">&nbsp;</span><span style="color:red">!</span><span style="font-size:12px">&nbsp;</span> = Overdue for a break</li>
+					</ul>
+					Late means more than 5.5h from start of break or end of last break, so does not take into account natural rest breaks.<br/>
+					<img src="css/images/instructions/vehicle_stats.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					Under most vehicles is the history bar, showing vehicle activity for the duration of the shift. Colours match jobs type, yellow indicates breaks, black indicates job of unknown colour, half height black indicates driving between stations, no bar indicates on station.<br/>
+					<img src="css/images/instructions/vehicle_history.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					To the left of the vehicle name are the live KPI stats for the shift. The top row indicates vehicles chute performance for each Red or Purple job, the bottom row indicated the vehicles destination performance for each job (all colours). There is one bar per relevant job. Full height chute bars indicate the vehicle was on station when responded, half height chute bars indicate the vehicle was off station (ie staff probably already in the vehicle). Colour coding is same as the top KPIs bar above.<br/>
+					<img src="css/images/instructions/left_kpi_bars.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					<br/>
+					<b><u>KPIs Page</u></b><br/>
+					<br/>
+					You have a staff breakdown and job breakdown option for each category. Both staff and job breakdown tables are sortable by each column, tap the column title to sort. In staff breakdown, tap the staff member name to drill down and then the blue job number to drill down further. In job breakdown the table is split into two. The first table shows job specific details:<br/>
+					<img src="css/images/instructions/kpi_job_specific.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					The second shows vehicle specific details:<br/>
+					<img src="css/images/instructions/kpi_vehicle_specific.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					There is one row for everytime a vehicle is assigned to a job (as opposed to one row for each job), so there will be double ups in the left column. Assign & Response times are only shown once for each job. Chute, chute variance (AVL), destination, destination variance (AVL) and top responding speed (Kmh) are shown once for each vehicle. The 'Chute' and first 'AVL' column show the chute time and the time the AVL is recorded as first moving in relation to the responding button being pressed. In this case, PORI1 was recorded as moving 49s <i>after</i> the responding button was pressed. A negative AVL number means the vehicle was recorded moving <i>before</i> the button was pressed.<br/>
+					<img src="css/images/instructions/kpi_chute_variance.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					The 'Dest' and second 'AVL' column show the time at destination and the time the vehicle was recorded as stopped moving in relation to the destination button being pressed. In this case, PORI1 was recorded as stopped 2s <i>after</i> the destination button was pushed. A negative AVL means the vehicle was stopped <i>before</i> the button was pressed (ie pushed destination after getting to hospital).<br/>
+					<img src="css/images/instructions/kpi_dest_variance.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					The 'Kmh' column shows the top recorded speed for the vehicle when responding to the job. Tap this to drill down on AVL specifics as sometimes the AVL throws wild data (eg 250kmh+).<br/>
+					<img src="css/images/instructions/kpi_top_speed.png" style="width:100%;max-width:400px"/><br/>
+					<br/>
+					The Chute AVL, Destination AVL and Top Speed is only available withing 15m of all vehicles clearing from the incident, but the Kmh can be pressed anytime to drill down earlier.
+				</div>
+				<hr/>		
+
+				<h2>Version Notes</h2>
+				<b><u>Version 3.3</u></b><br/>
+				<ul style="list-style-type:square;list-style-position:inside;padding:0">
+					<li>All dem bugs gone... hopefully.</li>
+				</ul>
+
+                <b><u>Version 3.2</u></b><br/>
+				<ul style="list-style-type:square;list-style-position:inside;padding:0">
+					<li>nothing new, just bug fixes to stop regular crashing.</li>
+				</ul>
+
+                <b><u>Version 3.0</u></b><br/>
+				<ul style="list-style-type:square;list-style-position:inside;padding:0">
+					<li>AVL Chute & Destination Variance added. Top Speed added. Note these only update around 15 mintues after all vehicles have cleared from the job.</li>
+					<li>Version notes added.</li>
+					<li>Stability Fixes</li>
+					<li>Instructions added</li>
+					<li>'Completed Jobs' colour coded in Unit Details screen.</li>
+					<li style="display:none">Chute, Destination & Top Speek times added for each job in Unit Details Screen</li>
+					<li style="display:none">Changed the way history is retrieved so that jobs are got within 15mins of being assigned as opposed to 15min of being completed.</li>
+					<li style="display:none">Changed the way history is retrieved to minimise jobs missed from history.</li>
+					<li style="display:none">Increased 'Completed Jobs' in Unit Details screen from 15 hours to 24 hours back.</li>
+					<li>Added assign location to jobs in Unit Details screen to more easily distinguish chute times when a vehicle was on station vs mobile.</li>
+					<li style="display:none">Fixed error where KPIs didn't account for daylight savings.</li>
+					<li style="display:none">Added ability to delay updating app by 24 hours.</li>
+					<li style="display:none">Stopped job numbers in Unit Details screen being linked as a phone number.</li>
+					<li>Added ability to open addresses in native maps app.</li>
+					<li>Real time (upto 15min delay) vehicle KPI bars added to left of screen. Top rows represent chute KPIs, bottom represent destination KPIs.</li>
+				</ul>
+
+			</div>
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a onclick="close_settings()">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+	</div>
+	<!--VEHICLE ABBREVIATIONS PAGE-->
+	<div data-role="page" id="vehicle_abbreviations_page" class="page" data-theme="a">
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">Abbreviations</h1>
+		</div>
+	    <div data-role="content" data-theme="a">
+        	<div>Use abbreviations to simplify the vehicle tracking screen and save visual space. Abbreviations are case sensitive and are processed in order from top of list to bottom.</div>
+			<br/>
+        	<div>Changes will be made on the next reload.</div>
+            <hr/>
+			<table id="vehicle_abbreviations_table" cellpadding="0" cellspacing="0"></table> 
+            <hr/>
+	        <input type="button" value="Reset Defaults" data-icon="refresh" data-iconpos="right" onclick="reset_defaults('vehicle_abbreviations_table')"/>            
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#settings_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+    </div>
+	<!--LOCATION ABBREVIATIONS PAGE-->
+	<div data-role="page" id="location_abbreviations_page" class="page" data-theme="a">
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">Abbreviations</h1>
+		</div>
+	    <div data-role="content" data-theme="a">
+        	<div>Use abbreviations to simplify the vehicle tracking screen and save space. Abbreviations are case sensitive and are processed in order from top of list to bottom.</div>
+			<br/>
+        	<div>Changes will be made on the next reload.</div>
+            <hr/>
+			<table id="location_abbreviations_table" cellpadding="0" cellspacing="0"></table>
+            <hr/>             
+	        <input type="button" value="Reset Defaults" data-icon="refresh" data-iconpos="right"  onclick="reset_defaults('location_abbreviations_table')"/>
+    	</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#settings_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>		
+	</div>
+	<!--SET EAS INCLUSIONS PAGE-->
+	<div data-role="page" id="eas_inclusions_page" class="page" data-theme="a">
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">EAS Inclusions</h1>
+		</div>
+        <div data-role="content" data-theme="a">
+        	<div>PTS units (numbered 20-39) and Events units (numbered 90-99) are not listed in the EAS screen (unless assigned to a EAS job). You can specifically include these units in the 'EAS' screen at all times below.</div>
+			<br/>
+        	<div>Changes will be made on the next reload.</div>
+            <hr/>
+            <div id="eas_inclusions_list"></div>
+            <hr/>            
+            <input type="button" value="Reset Defaults" data-icon="refresh" data-iconpos="right" onclick="reset_defaults('eas_inclusions_list')"/>
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#settings_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+	</div>
+	<!--SET OOS EXCLUSIONS PAGE-->
+	<div data-role="page" id="oos_exclusions_page" class="page" data-theme="a">
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">OOS Exclusions</h1>
+		</div>
+        <div data-role="content" data-theme="a">
+        	<div>List unit that you do not want to see on the 'EAS' screen if they are listed as 'OOS' (out of service). These vehicles will still appear on the 'All' screen. This can be the full or abbreviated name of the unit.</div>
+			<br/>
+        	<div>Changes will be made on the next reload.</div>
+            <hr/>
+            <div id="oos_exclusions_list"></div>
+            <hr/>            
+            <input type="button" value="Reset Defaults" data-icon="refresh" data-iconpos="right" onclick="reset_defaults('oos_exclusions_list')"/>
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#settings_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+	</div>
+	<!--SET PERMANENT EXCLUSIONS PAGE-->
+	<div data-role="page" id="permanent_exclusions_page" class="page" data-theme="a">
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">Exclusions</h1>
+		</div>
+        <div data-role="content" data-theme="a">
+        	<div>All visinet units appear on the 'All' screen unless excluded in here. Visinet lists some stations and hospitals as units for toning purposes, which you may want to exclude. This can be the full or abbreviated name of the unit.</div>
+			<br/>
+        	<div>Changes will be made on the next reload.</div>
+            <hr/>
+            <div id="permanent_exclusions_list"></div>
+	        <hr/>
+    	    <input type="button" value="Reset Defaults" data-icon="refresh" data-iconpos="right" onclick="reset_defaults('permanent_exclusions_list')"/>
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#settings_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+	</div>
+    <!--CHANGE APP PASSWORD PAGE-->
+	<div data-role="page" id="change_app_password_page" class="page" data-theme="a">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">Change Password</h1>
+		</div>
+        <div data-role="content" data-theme="a">
+        	<div>Change your App password here. Passwords must be between 6 and 20 characters long.</div>
+            <hr/>
+            <input type="password" placeholder="Current App Password" id="current_app_password" value=""/>
+            <input type="password" placeholder="New App Password" id="new_app_password_1" value=""/>
+            <input type="password" placeholder="New App Password" id="new_app_password_2" value=""/>                                
+	        <hr/>
+    	    <input type="button" value="Change Password" data-icon="check" data-iconpos="right" onclick="change_app_password()"/>
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#settings_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+	</div>
+    <!--CHANGE VPN PASSWORD PAGE-->
+	<div data-role="page" id="change_vpn_password_page" class="page" data-theme="a">
+        <div class="waiting_div waiting_div_mask"></div>
+        <div class="waiting_div waiting_div_spin"><img src="css/images/loading.png"/></div>
+        <div data-role="header" data-id="header" class="box_shadow" data-position="fixed" data-tap-toggle="false" data-theme="a">
+			<h1 style="margin-top:7px">Change Password</h1>
+		</div>
+        <div data-role="content" data-theme="a">
+        	<div>Your VPN password requires changing before proceeding. Change your password here, alternativley visit https://vpn.eacc.org.nz to do this. Passwords must contain at least one upper case letter, one lower case letter, one number and one symbol.</div>
+            <hr/>
+            <input type="text" placeholder="VPN Username" id="current_vpn_username" value=""/>
+            <input type="password" placeholder="Current VPN Password" id="current_vpn_password" value=""/>
+            <input type="password" placeholder="New VPN Password" id="new_vpn_password_1" value=""/>
+            <input type="password" placeholder="New VPN Password" id="new_vpn_password_2" value=""/>                                
+	        <hr/>
+    	    <input type="button" value="Change Password" data-icon="check" data-iconpos="right" onclick="change_vpn_password()"/>
+		</div>
+		<div data-role="footer" data-id="footer" data-position="fixed" data-tap-toggle="false" data-theme="a">
+	        <div data-role="navbar">
+		        <ul>
+            	    <li><a href="#login_page" data-transition="none" data-direction="reverse">Return</a></li>
+	            </ul>
+    	    </div>
+		</div>
+	</div>
+
+    <!--HIDDEN VARIABLES-->
+	<div id="history" style="display:none"></div>
+	<div id="queues" style="display:none"></div>
+	<div id="kpis" style="display:none"></div>	
+</body>
+</html>
